@@ -1,0 +1,158 @@
+\hypertarget{structprocess__control__block}{}\section{process\+\_\+control\+\_\+block Struct Reference}
+\label{structprocess__control__block}\index{process\+\_\+control\+\_\+block@{process\+\_\+control\+\_\+block}}
+
+
+Process Control Block.  
+
+
+
+
+{\ttfamily \#include $<$kernel\+\_\+proc.\+h$>$}
+
+
+
+Collaboration diagram for process\+\_\+control\+\_\+block\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{structprocess__control__block__coll__graph}
+\end{center}
+\end{figure}
+\subsection*{Data Fields}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{group__proc_gade1eea4d20492c4c97263201145e5097}{pid\+\_\+state} \hyperlink{structprocess__control__block_ae3334dd8a5747f108124c7129c27eea5}{pstate}
+\item 
+\hyperlink{group__proc_gadf327f09ee935cf1734c14e8849f0421}{P\+CB} $\ast$ \hyperlink{structprocess__control__block_af20d0c36862c6def80024b4586ff8934}{parent}
+\item 
+int \hyperlink{structprocess__control__block_add9b4f6d506a3538be7b53411e94fd28}{exitval}
+\item 
+\hyperlink{group__scheduler_gaf88d9c946bf70b36a1e8bc34383abfc9}{T\+CB} $\ast$ \hyperlink{structprocess__control__block_a3b7a2a952ec5c19d7331307639c78482}{main\+\_\+thread}
+\item 
+\hyperlink{group__syscalls_gaec3f2f835e105271fbbc00272c0ba984}{Task} \hyperlink{structprocess__control__block_a7d4ddbf8f67ac2bfe9774796b818354e}{main\+\_\+task}
+\item 
+int \hyperlink{structprocess__control__block_a8c8667a0f61f4380b3d5c69c57315511}{argl}
+\item 
+void $\ast$ \hyperlink{structprocess__control__block_af7ac33b69a8a1dc582e0fa35cc90568a}{args}
+\item 
+\hyperlink{group__rlists_ga8f6244877f7ce2322c90525217ea6e7a}{rlnode} \hyperlink{structprocess__control__block_a79b0dd70bbfff1d7da6ab4cbbd00eb1f}{children\+\_\+list}
+\item 
+\hyperlink{group__rlists_ga8f6244877f7ce2322c90525217ea6e7a}{rlnode} \hyperlink{structprocess__control__block_afddb936103b136214462e1ed870c4c70}{exited\+\_\+list}
+\item 
+\hyperlink{group__rlists_ga8f6244877f7ce2322c90525217ea6e7a}{rlnode} \hyperlink{structprocess__control__block_a5b9aeabcc3d676cda39eb563a4cc5bd9}{children\+\_\+node}
+\item 
+\hyperlink{group__rlists_ga8f6244877f7ce2322c90525217ea6e7a}{rlnode} \hyperlink{structprocess__control__block_a9e0d93783a89bd92f39243353f04a27e}{exited\+\_\+node}
+\item 
+\hyperlink{structCondVar}{Cond\+Var} \hyperlink{structprocess__control__block_a6bcb52e96fdf96d060af2b11f07d44bd}{child\+\_\+exit}
+\item 
+\hyperlink{group__streams_ga0c7e751afb9d6cadebf070961804d400}{F\+CB} $\ast$ \hyperlink{structprocess__control__block_aad72d85bd79a3100a497d11630a38977}{F\+I\+DT} \mbox{[}\hyperlink{group__syscalls_ga9c697bf9e856897ad75f28190a6f0b68}{M\+A\+X\+\_\+\+F\+I\+L\+E\+ID}\mbox{]}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Process Control Block. 
+
+This structure holds all information pertaining to a process. 
+
+Definition at line 38 of file kernel\+\_\+proc.\+h.
+
+
+
+\subsection{Field Documentation}
+\index{process\+\_\+control\+\_\+block@{process\+\_\+control\+\_\+block}!argl@{argl}}
+\index{argl@{argl}!process\+\_\+control\+\_\+block@{process\+\_\+control\+\_\+block}}
+\subsubsection[{\texorpdfstring{argl}{argl}}]{\setlength{\rightskip}{0pt plus 5cm}int process\+\_\+control\+\_\+block\+::argl}\hypertarget{structprocess__control__block_a8c8667a0f61f4380b3d5c69c57315511}{}\label{structprocess__control__block_a8c8667a0f61f4380b3d5c69c57315511}
+The main thread\textquotesingle{}s argument length 
+
+Definition at line 46 of file kernel\+\_\+proc.\+h.
+
+\index{process\+\_\+control\+\_\+block@{process\+\_\+control\+\_\+block}!args@{args}}
+\index{args@{args}!process\+\_\+control\+\_\+block@{process\+\_\+control\+\_\+block}}
+\subsubsection[{\texorpdfstring{args}{args}}]{\setlength{\rightskip}{0pt plus 5cm}void$\ast$ process\+\_\+control\+\_\+block\+::args}\hypertarget{structprocess__control__block_af7ac33b69a8a1dc582e0fa35cc90568a}{}\label{structprocess__control__block_af7ac33b69a8a1dc582e0fa35cc90568a}
+The main thread\textquotesingle{}s argument string 
+
+Definition at line 47 of file kernel\+\_\+proc.\+h.
+
+\index{process\+\_\+control\+\_\+block@{process\+\_\+control\+\_\+block}!child\+\_\+exit@{child\+\_\+exit}}
+\index{child\+\_\+exit@{child\+\_\+exit}!process\+\_\+control\+\_\+block@{process\+\_\+control\+\_\+block}}
+\subsubsection[{\texorpdfstring{child\+\_\+exit}{child_exit}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Cond\+Var} process\+\_\+control\+\_\+block\+::child\+\_\+exit}\hypertarget{structprocess__control__block_a6bcb52e96fdf96d060af2b11f07d44bd}{}\label{structprocess__control__block_a6bcb52e96fdf96d060af2b11f07d44bd}
+Condition variable for {\ttfamily Wait\+Child} 
+
+Definition at line 54 of file kernel\+\_\+proc.\+h.
+
+\index{process\+\_\+control\+\_\+block@{process\+\_\+control\+\_\+block}!children\+\_\+list@{children\+\_\+list}}
+\index{children\+\_\+list@{children\+\_\+list}!process\+\_\+control\+\_\+block@{process\+\_\+control\+\_\+block}}
+\subsubsection[{\texorpdfstring{children\+\_\+list}{children_list}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf rlnode} process\+\_\+control\+\_\+block\+::children\+\_\+list}\hypertarget{structprocess__control__block_a79b0dd70bbfff1d7da6ab4cbbd00eb1f}{}\label{structprocess__control__block_a79b0dd70bbfff1d7da6ab4cbbd00eb1f}
+List of children 
+
+Definition at line 49 of file kernel\+\_\+proc.\+h.
+
+\index{process\+\_\+control\+\_\+block@{process\+\_\+control\+\_\+block}!children\+\_\+node@{children\+\_\+node}}
+\index{children\+\_\+node@{children\+\_\+node}!process\+\_\+control\+\_\+block@{process\+\_\+control\+\_\+block}}
+\subsubsection[{\texorpdfstring{children\+\_\+node}{children_node}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf rlnode} process\+\_\+control\+\_\+block\+::children\+\_\+node}\hypertarget{structprocess__control__block_a5b9aeabcc3d676cda39eb563a4cc5bd9}{}\label{structprocess__control__block_a5b9aeabcc3d676cda39eb563a4cc5bd9}
+Intrusive node for {\ttfamily children\+\_\+list} 
+
+Definition at line 52 of file kernel\+\_\+proc.\+h.
+
+\index{process\+\_\+control\+\_\+block@{process\+\_\+control\+\_\+block}!exited\+\_\+list@{exited\+\_\+list}}
+\index{exited\+\_\+list@{exited\+\_\+list}!process\+\_\+control\+\_\+block@{process\+\_\+control\+\_\+block}}
+\subsubsection[{\texorpdfstring{exited\+\_\+list}{exited_list}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf rlnode} process\+\_\+control\+\_\+block\+::exited\+\_\+list}\hypertarget{structprocess__control__block_afddb936103b136214462e1ed870c4c70}{}\label{structprocess__control__block_afddb936103b136214462e1ed870c4c70}
+List of exited children 
+
+Definition at line 50 of file kernel\+\_\+proc.\+h.
+
+\index{process\+\_\+control\+\_\+block@{process\+\_\+control\+\_\+block}!exited\+\_\+node@{exited\+\_\+node}}
+\index{exited\+\_\+node@{exited\+\_\+node}!process\+\_\+control\+\_\+block@{process\+\_\+control\+\_\+block}}
+\subsubsection[{\texorpdfstring{exited\+\_\+node}{exited_node}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf rlnode} process\+\_\+control\+\_\+block\+::exited\+\_\+node}\hypertarget{structprocess__control__block_a9e0d93783a89bd92f39243353f04a27e}{}\label{structprocess__control__block_a9e0d93783a89bd92f39243353f04a27e}
+Intrusive node for {\ttfamily exited\+\_\+list} 
+
+Definition at line 53 of file kernel\+\_\+proc.\+h.
+
+\index{process\+\_\+control\+\_\+block@{process\+\_\+control\+\_\+block}!exitval@{exitval}}
+\index{exitval@{exitval}!process\+\_\+control\+\_\+block@{process\+\_\+control\+\_\+block}}
+\subsubsection[{\texorpdfstring{exitval}{exitval}}]{\setlength{\rightskip}{0pt plus 5cm}int process\+\_\+control\+\_\+block\+::exitval}\hypertarget{structprocess__control__block_add9b4f6d506a3538be7b53411e94fd28}{}\label{structprocess__control__block_add9b4f6d506a3538be7b53411e94fd28}
+The exit value 
+
+Definition at line 42 of file kernel\+\_\+proc.\+h.
+
+\index{process\+\_\+control\+\_\+block@{process\+\_\+control\+\_\+block}!F\+I\+DT@{F\+I\+DT}}
+\index{F\+I\+DT@{F\+I\+DT}!process\+\_\+control\+\_\+block@{process\+\_\+control\+\_\+block}}
+\subsubsection[{\texorpdfstring{F\+I\+DT}{FIDT}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf F\+CB}$\ast$ process\+\_\+control\+\_\+block\+::\+F\+I\+DT\mbox{[}{\bf M\+A\+X\+\_\+\+F\+I\+L\+E\+ID}\mbox{]}}\hypertarget{structprocess__control__block_aad72d85bd79a3100a497d11630a38977}{}\label{structprocess__control__block_aad72d85bd79a3100a497d11630a38977}
+The fileid table of the process 
+
+Definition at line 56 of file kernel\+\_\+proc.\+h.
+
+\index{process\+\_\+control\+\_\+block@{process\+\_\+control\+\_\+block}!main\+\_\+task@{main\+\_\+task}}
+\index{main\+\_\+task@{main\+\_\+task}!process\+\_\+control\+\_\+block@{process\+\_\+control\+\_\+block}}
+\subsubsection[{\texorpdfstring{main\+\_\+task}{main_task}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Task} process\+\_\+control\+\_\+block\+::main\+\_\+task}\hypertarget{structprocess__control__block_a7d4ddbf8f67ac2bfe9774796b818354e}{}\label{structprocess__control__block_a7d4ddbf8f67ac2bfe9774796b818354e}
+The main thread\textquotesingle{}s function 
+
+Definition at line 45 of file kernel\+\_\+proc.\+h.
+
+\index{process\+\_\+control\+\_\+block@{process\+\_\+control\+\_\+block}!main\+\_\+thread@{main\+\_\+thread}}
+\index{main\+\_\+thread@{main\+\_\+thread}!process\+\_\+control\+\_\+block@{process\+\_\+control\+\_\+block}}
+\subsubsection[{\texorpdfstring{main\+\_\+thread}{main_thread}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf T\+CB}$\ast$ process\+\_\+control\+\_\+block\+::main\+\_\+thread}\hypertarget{structprocess__control__block_a3b7a2a952ec5c19d7331307639c78482}{}\label{structprocess__control__block_a3b7a2a952ec5c19d7331307639c78482}
+The main thread 
+
+Definition at line 44 of file kernel\+\_\+proc.\+h.
+
+\index{process\+\_\+control\+\_\+block@{process\+\_\+control\+\_\+block}!parent@{parent}}
+\index{parent@{parent}!process\+\_\+control\+\_\+block@{process\+\_\+control\+\_\+block}}
+\subsubsection[{\texorpdfstring{parent}{parent}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf P\+CB}$\ast$ process\+\_\+control\+\_\+block\+::parent}\hypertarget{structprocess__control__block_af20d0c36862c6def80024b4586ff8934}{}\label{structprocess__control__block_af20d0c36862c6def80024b4586ff8934}
+Parent\textquotesingle{}s pcb. 
+
+Definition at line 41 of file kernel\+\_\+proc.\+h.
+
+\index{process\+\_\+control\+\_\+block@{process\+\_\+control\+\_\+block}!pstate@{pstate}}
+\index{pstate@{pstate}!process\+\_\+control\+\_\+block@{process\+\_\+control\+\_\+block}}
+\subsubsection[{\texorpdfstring{pstate}{pstate}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf pid\+\_\+state} process\+\_\+control\+\_\+block\+::pstate}\hypertarget{structprocess__control__block_ae3334dd8a5747f108124c7129c27eea5}{}\label{structprocess__control__block_ae3334dd8a5747f108124c7129c27eea5}
+The pid state for this P\+CB 
+
+Definition at line 39 of file kernel\+\_\+proc.\+h.
+
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+\hyperlink{kernel__proc_8h}{kernel\+\_\+proc.\+h}\end{DoxyCompactItemize}
