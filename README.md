@@ -50,4 +50,4 @@ standard packages `doxygen` and `valgrind` with their dependencies (e.g., `graph
 for anything serious, as well as the GDB debugger.
 
 ### Acknowledgements
-
+* This project was implemented for the requirements of the lesson Operating Systems
