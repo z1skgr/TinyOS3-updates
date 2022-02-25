@@ -13,10 +13,26 @@ extensions are planned for the future.
 
 ## Quick start
 
+```
+$ git clone https://github.com/vsamtuc/tinyos3.git
+$ cd tinyos3
+$ touch .depend
+```
 After downloading the code, just build it.
 ```
 $ make
 ```
+and try to discover system and test files. 
+
+### Test
+
+```
+$ gnome-terminal -e "./terminal 0"
+$ gnome-terminal -e "./terminal 1"
+$ ./test_bios2
+$ ./bios_example5
+```
+
 If all goes well, the code should build without warnings. Then, you can run your first instance of tinyos,
 a simulation of Dijkstra's Dining Philosophers.
 ```
