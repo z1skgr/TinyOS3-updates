@@ -67,3 +67,4 @@ for anything serious, as well as the GDB debugger.
 
 ### Acknowledgements
 * This project was implemented for the requirements of the lesson Operating Systems
+* Many credits to [Vsam](https://github.com/vsamtuc)
