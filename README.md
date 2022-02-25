@@ -70,7 +70,7 @@ Working with the code, at the basic level, requires a recent GCC compiler (with 
 standard packages `doxygen` and `valgrind` with their dependencies (e.g., `graphviz`) are also needed 
 for anything serious, as well as the GDB debugger.
 
-### Upgrades
+### Upgrades 
 * Multilevel Feedback Queues (changes to initial  kernel_sched.c)
     * Αrray of queues, a queue for each priority.
     * Priotity => TCB of an integer field
@@ -94,8 +94,14 @@ the queue to which the thread will be added.
 
 * User program for standard output information about the system (syscall changes to initial kernel_proc).
 
-For more informations, check doc file.
+For more informations [^1][^2], check doc folder.
+
 
 ### Acknowledgements
 * This project was implemented for the requirements of the lesson Operating Systems
 * Many credits to  professor [Vsam](https://github.com/vsamtuc)
+
+
+[^1]: Folder 1 has  Feedback Queues and Threads
+[^2]: Folder 2 with all upgrades.
+
