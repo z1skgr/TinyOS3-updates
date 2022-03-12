@@ -1,5 +1,5 @@
 
-# TinyOS v.3
+# TinyOS v.3 + Updates
 
 TinyOS is a very small operating system, built on top of a simple-minded virtual machine, whose purpose is
 purely educational. It is not related in any way to the well-known operating system for wireless sensors,
