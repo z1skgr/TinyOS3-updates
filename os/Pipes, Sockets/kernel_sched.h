@@ -115,7 +115,7 @@ typedef struct thread_control_block
   
   int priority;
 
-  /* Metablhtes pou xrishmopoiountai gia epanafora ths proteraiothtas kata to priority inversion */
+  /* Variables used for resetting the priority during priority inversion */
   int prev_queue;
   int mutex_flag;
 } TCB;

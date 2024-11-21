@@ -135,10 +135,10 @@ TCB* spawn_thread(PCB* pcb, void (*func)())
   tcb->thread_func = func;
   tcb->wakeup_time = NO_TIMEOUT;
 
-  /* Init priority sth prwth lista. */
+  /* Init priority for the first list. */
   tcb->priority = TOP_PRIORITY;
 
-  /* Init tis metablhtes gia to mutex inversion */
+  /* Init variables for mutex inversion */
   tcb->mutex_flag = 0;
   tcb->prev_queue = TOP_PRIORITY;
 

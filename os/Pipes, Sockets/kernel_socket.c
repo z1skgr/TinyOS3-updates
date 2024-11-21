@@ -8,18 +8,19 @@
 
 
 /*
-*	Ola ta threads dhmiourgountai ws unbound kai mono ean tous eixe dw8ei tote port mporoun na ginoun listeners.
-*	Otan ena socket 8elei na kanei connect dhmiourgei ena struct, wste na uparxei sunxronismos metaksu tou server kai tou client.
-*	Afou to dhmiourghsei perimenei mexri na tou epistrafei me to fcb tou antigrfou tou server, opou 8a ginei h sindesh peer to peer.
-*	H Shutdown kobei thn epikinwnia kleinwntas ta pipes. Gia na diagraftoun ta sockets prepei na kalestei h close.
-*	H close kanei diaforetikh diadikasia analoga to eidos tou socket.
-*	Peripou to 2-3 % twn sundesewn apotixanei, pisteuoume logo ths thread_join. Sto validate_api fainetai ws Test timed out.
+* All threads are created as unbound and only if they were given a port at that time can they become listeners
+* When a socket wants to connect it creates a struct, so that there is synchronization between server and client
+* After it creates it, it waits until it is returned with the fcb of the server copy where the peer to peer connection will be made
+* Shutdown cuts the communication by closing the pipes. To delete the sockets, close must be called
+* close does different things depending on the type of socket
+* About 2-3% of connections fail because of thread_join. In validate_api it shows up as test timed out
+
 */
 
 
 /******************** Socket ops *********************/
 
-// Oi read kai oi write aplws kaloun tis katalliles pipe_read kai pipe_write.
+// The read and write simply call the appropriate pipe_read and pipe_write.
 int socket_write(void* socket_obj, const char* buf, unsigned int size)
 {
 	SCB* socket = (SCB*) socket_obj;
@@ -71,7 +72,7 @@ int socket_close(void* socket_obj)
 
 	if(socket->type == UNBOUND){
 
-		// An kalestei h close se ena antigrafo tou server prepei na diagraftei.
+		// If close is called a copy of the server must be deleted.
 		if(socket->peer != NULL)
 			free(socket->peer);
 
@@ -81,16 +82,16 @@ int socket_close(void* socket_obj)
 
 		// Close connection and free socket.
 
-		/* Ta pipes kleinoun otan teleiwsoun ola ta nimata. Mporoume na ta xrhsimopoihsoume
-		 * gia na kseroume an exoun teleiwsei ta nhmata tou peer socket. */
+		/* The pipes are closed when all the threads are finished. We can 
+		 * use them to know if the threads of the peer socket are finished. */
 		pipe_CB* pipes[2] = {(pipe_CB*) socket->peer->pipes_FCBs[0]->streamobj, (pipe_CB*) socket->peer->pipes_FCBs[1]->streamobj};
 		socket->peer->pipes_FCBs[0]->streamfunc->Close(socket->peer->pipes_FCBs[0]->streamobj);
 		socket->peer->pipes_FCBs[1]->streamfunc->Close(socket->peer->pipes_FCBs[1]->streamobj);
 
-		/* exoun kleisei kai ta 2 pipe kai apo tis 2 meries.
-		 * exei kleisei to ena pipe apo ayth thn meria kai to allo kai apo tis dyo meries.
+		/* Closed both the 2 pipes from both the 2 sides.
+		 * It has closed one pipe from side and the other from both sides.
 		 *  -||-
-		 * exoun kleisei kai ta 2 pipe mono apo authn th meria.	*/
+		 * Both 2 pipes have been closed from this section only.	*/
 		if( (pipes[0] == NULL && pipes[1] == NULL)
 			|| (pipes[0] == NULL && pipes[1]->writer_closed == 1)
 			|| (pipes[0]->reader_closed == 1 && pipes[1] == NULL)
@@ -102,20 +103,20 @@ int socket_close(void* socket_obj)
 	}
 	else{// listener
 	
-		// Ekleise to nhma ara ksipname ta upoloipa kai tous enimerwnoume ti egine.
+		// Closed the thread, so we woke up the rest of them and let them know what happened.
 		socket->listener->closing = 1;
 		Cond_Broadcast(& socket->listener->server_cv);
 
-		//Ksipnima clients.
+		//Wake clients.
 		while(!is_rlist_empty(& socket->listener->request_list)){
 			rlnode* sel = rlist_pop_front(& socket->listener->request_list);
 			Cond_Signal(& sel->request->client_cv);
 		}
 
-		// eleu8erwsh port 
+		// Free port 
 		PORT_MAP[socket->portNum] = NULL;
 
-		// Perimene na adiasoun ta cv. Bzoume sched_mutex gia na dwsei proteraiwthta sta alla.
+		// Waiting for the cv. sched_mutex to empty to give priority to the others
 		while(socket->listener->server_thread_count > 0){
 			kernel_wait(& socket->listener->close_cv, SCHED_MUTEX);
 		}
@@ -147,7 +148,7 @@ Fid_t sys_Socket(port_t port)
 	// Allocate space for socket.
 	SCB* socket = (SCB*) xmalloc(sizeof(SCB));
 
-	// Allocate gia to unbound an xreiazetai
+	// Allocate for unbound if needed
 
 	// Init socket.
 	socket->type = UNBOUND;
@@ -157,13 +158,13 @@ Fid_t sys_Socket(port_t port)
 	Fid_t socket_fid = 0;
 	socket->fcb = NULL;
 
-	// elengxos gia to reserve
+	// Condition for the reserve
 	if(!FCB_reserve(1, &socket_fid, &(socket->fcb))){
 		free(socket);
 		return -1;
 	} 
 
-  	// Gemisma fcb.
+  	// Fill fcb.
   	socket->fcb->streamobj = socket;
   	socket->fcb->streamfunc = &socket_ops;
 
@@ -179,7 +180,7 @@ int sys_Listen(Fid_t sock)
 		return -1;
 	SCB* socket = (SCB*) fcb->streamobj;
 
-	// Den ginetai ena socket xwris port na ginei listener h na ginei se ena piasmeno port.
+	// A socket without a port cannot become a listener or become a listener on a busy port.
 	if (socket->portNum == NOPORT || PORT_MAP[socket->portNum] != NULL)
 		return -1;
 
@@ -206,7 +207,7 @@ int sys_Listen(Fid_t sock)
 	// Acquire port.
 	PORT_MAP[socket->portNum] = socket;
 
-	// De 8eloume na kanei kaneis join sto thread pou eftiakse ton listener.
+	// Forbit join the thread that created the listener.
 	sys_ThreadDetach(sys_ThreadSelf());
 
 	// Success.
@@ -217,7 +218,7 @@ int sys_Listen(Fid_t sock)
 Fid_t sys_Accept(Fid_t lsock)
 {
 
-	/***************** Elenxos socket ************************/
+	/***************** Control socket ********************************/
 
 	// Get fcb. Check legality and if it has a socket. Then get it.
 	FCB* fcb = get_fcb(lsock);
@@ -229,11 +230,11 @@ Fid_t sys_Accept(Fid_t lsock)
 	if(lsocket->type != LISTENER)
 		return NOFILE;
 
-	/****************** Anamonh sundeshs ***********************/
+	/****************** Waiting for connection ***********************/
 
 	lsocket->listener->server_thread_count++;
 
-	// Ta nhmata tou server prepei na koimi8oun an den exoun na eksipirethsoun kanena connect. Ksipnaei ena otan emfanistei request.
+	// The server threads should sleep if they don't have any connections to serve. It wakes one up when a request appears
 	while(is_rlist_empty(& lsocket->listener->request_list)){
 		kernel_wait(& lsocket->listener->server_cv,SCHED_PIPE);
 
@@ -241,7 +242,7 @@ Fid_t sys_Accept(Fid_t lsock)
 		if(lsocket->listener->closing){
 			lsocket->listener->server_thread_count--;
 
-			// To teleutaio nhma pou 8a figei logo close tha ksipnisei auto pou diagrafei ton listener.
+			// The last thread to leave due to close will wake up the one that will delete the listener
 			if(lsocket->listener->server_thread_count == 0)
 				Cond_Broadcast(& lsocket->listener->close_cv);
 			return NOFILE;
@@ -250,18 +251,18 @@ Fid_t sys_Accept(Fid_t lsock)
 
 	lsocket->listener->server_thread_count--;
 
-	/******************	Dhmiourgia antigrafou	*******************/
+	/******************	Make copy	*******************/
 
 	// Reserve FCB
 	Fid_t socket_fid = 0;
 	FCB* new_fcb = NULL;
 
-	// elengxos gia to reserve. Afou den eksipirethse to request prepei na to ksaanebasei.
+	// Since it did not serve the request, it has to read it again.
 	if(!FCB_reserve(1, &socket_fid, &new_fcb)){
 		return NOFILE;
 	}
 
-	// Pernei ena request.
+	// Takes a request.
 	rlnode* sel = rlist_pop_front(& lsocket->listener->request_list);
 	request_t* request = sel->request;
 
@@ -280,10 +281,10 @@ Fid_t sys_Accept(Fid_t lsock)
 
 	new_socket->peer->port_accepted = 0;
 
-	// Bazoume sto request to antigrafo tou listener.
+	// We put in the request the copy of the listener.
 	request->server_copy_fcb = new_fcb;
 
-	// ksipname ton client pou ekane to request.
+	// Wake up client that made the request.
 	Cond_Signal(& request->client_cv);
 
 	return socket_fid;
@@ -293,7 +294,7 @@ Fid_t sys_Accept(Fid_t lsock)
 int sys_Connect(Fid_t sock, port_t port, timeout_t timeout)
 {
 
-	/***************** Elenxos socket kai port. ************************/
+	/***************** Control socket and port. ************************/
 
 	// Get fcb. Check legality and if it has a socket. Then get it.
 	FCB* fcb = get_fcb(sock);
@@ -317,20 +318,20 @@ int sys_Connect(Fid_t sock, port_t port, timeout_t timeout)
 	if(timeout != NO_TIMEOUT && timeout < 500)
 		timeout = 500;
 
-	/****************** Anamonh sundeshs ***********************/
+	/****************** Waiting for connection ***********************/
 
-	// Dhmiourgia request
+	// Make request
 	request_t* request = (request_t*) xmalloc(sizeof(request_t));
 	request->client_cv = COND_INIT;
 	request->server_copy_fcb = NULL;
 
-	//Apostolh request.
+	//Send request.
 	rlist_push_front(& PORT_MAP[port]->listener->request_list, rlnode_init(&(request->node), request));
 
-	// Enhmerwsh tou server oti zhtaei o client eksipiretish.
+	// Informing the server that the client is requesting service.
 	Cond_Signal(& PORT_MAP[port]->listener->server_cv);
 
-	// Oso den uparxoun antigrafa tou server gia na eksipirethsoun ton client, autos perimenei.
+	// As long as there are no copies of the server to serve the client, the client waits.
 	while(request->server_copy_fcb == NULL)
 	{
 		if(!kernel_timedwait(& request->client_cv, SCHED_PIPE, timeout)){
@@ -346,21 +347,21 @@ int sys_Connect(Fid_t sock, port_t port, timeout_t timeout)
 		}
 	}
 
-	/******************	Dhmiourgia Sundeshs	*******************/
+	/******************	Establish connection	*******************/
 
-	// Pernei to socket pou eftiakse o server.
+	// Passes the socket created by the server.
 	SCB* socket_server = (SCB*) request->server_copy_fcb->streamobj;
 	socket_server->type = PEER;
 
-	// Afou o client parei to antigrafo tou server, to request einai axrhsto kai diagrafetai.
+	// After the client gets the server copy, the request is useless and deleted.
 	rlist_remove(& request->node);
 	free(request);
 
-	//	socket_client metatroph se peer
+	//	socket_client convert to peer
 	socket_client->peer = (peer_t*) xmalloc(sizeof(peer_t));
 	socket_client->type = PEER;
 
-	// dhmiourgia pipes kai twn fcbs tous.
+	// Make pipes their fcbs.
 	socket_client->peer->pipes_FCBs[0] = (FCB*) xmalloc(sizeof(FCB));	//reader client
 	socket_client->peer->pipes_FCBs[1] = (FCB*) xmalloc(sizeof(FCB));	//writer client
 
@@ -369,7 +370,7 @@ int sys_Connect(Fid_t sock, port_t port, timeout_t timeout)
 
 	FCB* temp_fcb_array[2];
 	
-	// Dhmiourgia pipes kai sundesh tous.
+	// Make pipes and establish their connections.
 	temp_fcb_array[0] = socket_client->peer->pipes_FCBs[0];
 	temp_fcb_array[1] = socket_server->peer->pipes_FCBs[1];
 	create_pipe(temp_fcb_array);
@@ -387,7 +388,7 @@ int sys_Connect(Fid_t sock, port_t port, timeout_t timeout)
 
 int sys_ShutDown(Fid_t sock, shutdown_mode how)
 {
-	/***************** Elenxos socket ************************/
+	/***************** Control socket  ************************/
 
 	int retcode = -1;
 

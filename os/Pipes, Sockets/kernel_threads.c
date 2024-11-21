@@ -11,7 +11,7 @@
 
 
 /** 
-  @brief H sunartisi pou kskeinaei ena neo thread.
+  @brief Function that starts a new thread.
   */
 void start_thread(){  
 
@@ -32,7 +32,7 @@ void start_thread(){
 Tid_t sys_CreateThread(Task task, int argl, void* args)
 {
 
-  /* Desmeuoume xwro gia ptcb. */
+  /* Allocate memory for ptcb. */
   PTCB* ptcb = (PTCB*) xmalloc(sizeof(PTCB));
 
   /* Init ptcb */
@@ -44,17 +44,17 @@ Tid_t sys_CreateThread(Task task, int argl, void* args)
   ptcb->args = args;
   ptcb->thread_exited = 0;
 
-  /* To tid einai h dieu8unsh tou ptcb. */
+  /* The tid is the address of the ptcb. */
   ptcb->tid = (Tid_t) ptcb;
 
-  /* Dhmiourgia kombou. */
+  /* Make node. */
   rlnode_init(& ptcb->ptcb_node, ptcb);
 
-  /* sundesh listwn kai pointers. */
+  /* Connect list and pointers. */
   ptcb->owner_pcb = CURPROC;
   rlist_push_back(& CURPROC->PTCB_list, & ptcb->ptcb_node);
 
-  /* Dhmiourgia thread kai sundesh tou me to ptcb. */
+  /* Creating a thread and connecting it to ptcb. */
   if(task != NULL) {
     CURPROC->thread_count++;
     ptcb->thread = spawn_thread(CURPROC, start_thread);
@@ -80,12 +80,12 @@ Tid_t sys_ThreadSelf()
 int sys_ThreadJoin(Tid_t tid, int* exitval)
 {
   PTCB* ptcb = (PTCB*)tid;
-  //an iparxei egkiro tid.
+  //For valid tid.
   if(rlist_find(& CURPROC->PTCB_list, ptcb, NULL) != NULL){
-    // An den einai o euatos tou, den einai detached to thread to opio 8elei na kanei join, kai den exei kanei kapou allou join
+    // If it's not itself, the thread it wants to join is not detached and hasn't joined somewhere else.
     if((tid != sys_ThreadSelf()) && (ptcb->thread_detached == 0)){
 
-      // Mpenei sthn lista tou cv mexri na to ksipnisei kapoios allos
+      // It goes on the cv list until something wakes it up
       ptcb->ref_count++;
       
       // Sleep
@@ -96,26 +96,26 @@ int sys_ThreadJoin(Tid_t tid, int* exitval)
       if(exitval!=NULL)
         *exitval = ptcb->exitval;
 
-      // Bghke apo th lista.
+      // Out from the list.
       ptcb->ref_count--; 
 
       if(ptcb->ref_count == 0 && ptcb->thread_exited == 1){
         
-        // Afairoume apo thn lista me ta ptcb tou process.
+        // Remove from the ptcb list of the process
         rlist_remove(& ptcb->ptcb_node);
 
-        // Eleu8erwsh mnhmhs tou ptcb.
+        // Release ptcb memory.
         free(ptcb);
       }
       return 0;
     }
-    // Se periptwsh pou kanei kapios join se thread to opio einai exited kai prepei na ka8aristei.
+    // In case something joins a thread that is exited and needs to be cleaned.
     if(ptcb->ref_count == 0 && ptcb->thread_exited == 1){
 
-      // Afairoume apo thn lista me ta ptcb tou process.
+      // Remove from the ptcb list of the process
       rlist_remove(& ptcb->ptcb_node);
 
-      // Eleu8erwsh mnhmhs tou ptcb.
+      // Release ptcb memory.
       free(ptcb);
     }  
   }
@@ -130,7 +130,7 @@ int sys_ThreadDetach(Tid_t tid)
 {
   PTCB* ptcb = (PTCB*)tid;
 
-  // Ksipnaei ta threads pou to perimenoun kai to kanei detached
+  // Wakes up the thread waiting for it and makes it detached
   if(rlist_find(& CURPROC->PTCB_list, ptcb, NULL) != NULL){
     ptcb->thread_detached = 1;
     Cond_Broadcast(& ptcb->cv);
@@ -148,7 +148,7 @@ void sys_ThreadExit(int exitval)
 
   CURPTCB->exitval = exitval;
 
-  // ksipname osa threads perimenoun afto pou 8a skotwsoume
+  // Wake up as many threads waiting for what we're going to kill
   Cond_Broadcast(& CURPTCB->cv);
 
   CURPROC->thread_count--;

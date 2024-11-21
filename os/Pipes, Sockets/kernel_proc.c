@@ -182,11 +182,11 @@ Pid_t sys_Exec(Task call, int argl, void* args)
    */
   if(call != NULL) {
 
-    //dhmiourgia main thread
+    //Make main thread
     newproc->thread_count++;
     newproc->main_thread = spawn_thread(newproc, start_main_thread);
 
-    //Deixnoume oti to main thread einai ksexwristo giati den exei ptcb.
+    //the main thread is unique because it does not have ptcb
     newproc->main_thread->owner_ptcb = NULL;
     
     wakeup(newproc->main_thread);
@@ -360,7 +360,7 @@ void sys_Exit(int exitval)
   /************** Process Info ****************/
 
 
-//  Koitame ta pcb akribws prin ta emfanisoume gia na einai oso pio prosfata ginetai.
+//  Look at the pcb just before we display them to make them as recent as possible.
 int procinfo_read(void* procinfo_obj, char* buf, unsigned int size)
 {
   procinfo_CB* pi_CB = (procinfo_CB*) procinfo_obj;
@@ -444,11 +444,11 @@ Fid_t sys_OpenInfo()
   // Allocate space for piCB.
   procinfo_CB* pi_CB = (procinfo_CB*) xmalloc(sizeof(procinfo_CB));
 
-  // Gemisma fcb.
+  // Fill fcb.
   fcb->streamobj = pi_CB;
   fcb->streamfunc = &procinfo_ops;
 
-  // Ksekiname apo to init.
+  // Start from init.
   pi_CB->count = 1;
 
   return fid;

@@ -16,14 +16,14 @@ typedef enum{
 
 typedef struct listener_s
 {
-	//	Metrane posa threads einai mesa sta cv, wste na prostateutoun kata to exit tou listener.
+	//	Count how many threads in cvs, for their protection during listener exit.
 	CondVar server_cv;
 	int server_thread_count;
 
-	// Lista me ta request.
+	// List for requests.
 	rlnode request_list;
 
-	// Xrhsimopoiountai kata to klisimo. Ksipname ta threads pou einai sto accept kai meta eleu8erwnoume tis domes.
+	// Used at closing. We wake up the threads that are on accept and then release the structures
 	CondVar close_cv;
 	int closing;
 
@@ -44,7 +44,7 @@ typedef struct socket_control_block
 	FCB* fcb;
 	port_t portNum;
 
-	// Ta socket xreiazontai diaforetikes plirofories analoga an einai listener h peer.
+	// Sockets need different information depending on whether they are listener or peer.
 	union{
 		listener_t* listener;
 		peer_t* peer;
@@ -53,7 +53,7 @@ typedef struct socket_control_block
 } SCB;
 
 
-//	Request struct. To dhmiourgei o client wste na tou dwsei o server ena antigrafo tou.
+//	Request struct. The client creates it so that the server can give him a copy.
 typedef struct request_struct
 {
 	rlnode node;

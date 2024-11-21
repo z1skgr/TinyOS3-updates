@@ -53,8 +53,8 @@ int FCB_decref(FCB* fcb)
   fcb->refcount --;
   if(fcb->refcount==0) {
     
-    //klish eidikwn close,
-    //An ta paidia exoun klironomisei to pipe prepei na to cleisoun kai auta gia na diagraftei.
+    //Call special close.
+    //If the children have inherited the Pipe, they must also close it in order to delete it.
     int retval = fcb->streamfunc->Close(fcb->streamobj);
 
     release_FCB(fcb);
