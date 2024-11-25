@@ -196,7 +196,7 @@ int sys_Listen(Fid_t sock)
 
 	// Init.
 	socket->listener->server_cv = COND_INIT;
-	socket->listener->close_cv = COND_INIT; Sleep listener, till its cv is empty
+	socket->listener->close_cv = COND_INIT; //Sleep listener, till its cv is empty
 
 	socket->listener->server_thread_count = 0;
 
