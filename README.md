@@ -71,6 +71,7 @@ standard packages `doxygen` and `valgrind` with their dependencies (e.g., `graph
 for anything serious, as well as the GDB debugger.
 
 ### Upgrades 
+#### Feedback Queue
 * Multilevel Feedback Queues (changes to initial  kernel_sched.c)
     * Αrray of queues, a queue for each priority.
     * Priotity => TCB of an integer field
@@ -85,6 +86,7 @@ the queue to which the thread will be added.
     * ThreadExit
     * TreadDetach
 
+#### Pipes, Sockets
 * Process communication mechanisms, pipes and sockets. (syscall changes to initial kernel_socket, kernel_pipe.c, kernel_steams.c)
    *  Socket
    *  Connect
@@ -102,6 +104,6 @@ For more informations [^1][^2], check doc folder.
 * Many credits to  professor [Vsam](https://github.com/vsamtuc)
 
 
-[^1]: Folder 1 has  Feedback Queues and Threads
-[^2]: Folder 2 with all upgrades.
+[^1]: Feedback Queue  has  Feedback Queues and Threads
+[^2]: Pipes, Sockets has all upgrades (server communication and scheduling).
 
