@@ -96,7 +96,7 @@ the queue to which the thread will be added.
 
 * User program for standard output information about the system (syscall changes to initial kernel_proc).
 
-For more informations [^1][^2], check doc folder.
+__Pipes, Sockets__ folder has all upgrades (includ. scheduling). For more informations [^1][^2], check doc folder. 
 
 
 ### Acknowledgements
